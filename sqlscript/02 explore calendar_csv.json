@@ -2,7 +2,7 @@
 	"name": "02 explore calendar_csv",
 	"properties": {
 		"content": {
-			"query": "SELECT *\nFROM \nOPENROWSET (\n    BULK 'calendar.csv',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE,\n    FIELDTERMINATOR = ',',\n    ROWTERMINATOR = '\\n'\n)\nWITH (\n    date_key VARCHAR(8),\n    date DATE,\n    year SMALLINT,\n    month SMALLINT,\n    day SMALLINT,\n    day_name VARCHAR(10),\n    day_of_year SMALLINT,\n    week_of_month SMALLINT,\n    week_of_year SMALLINT,\n    month_name VARCHAR(10),\n    year_month VARCHAR(6),\n    year_week VARCHAR(6)\n)\nAS [RESULT]",
+			"query": "SELECT *\nFROM \nOPENROWSET (\n    BULK 'calendar.csv',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = TRUE,\n    FIELDTERMINATOR = ',',\n    ROWTERMINATOR = '\\n'\n)\nWITH (\n    date_key INT,\n    date DATE,\n    year SMALLINT,\n    month TINYINT,\n    day TINYINT,\n    day_name VARCHAR(10),\n    day_of_year SMALLINT,\n    week_of_month TINYINT,\n    week_of_year TINYINT,\n    month_name VARCHAR(10),\n    year_month INT,\n    year_week INT\n)\nAS [RESULT]",
 			"metadata": {
 				"language": "sql"
 			},
