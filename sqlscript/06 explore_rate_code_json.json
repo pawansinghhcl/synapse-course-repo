@@ -1,0 +1,17 @@
+{
+	"name": "06 explore_rate_code_json",
+	"properties": {
+		"content": {
+			"query": "USE nyc_taxi_db;\n\nSELECT rate_code_id, rate_code\nFROM OPENROWSET(\n    BULK 'rate_code.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b',\n    ROWTERMINATOR = '0x0b'\n) \nWITH \n(\n    jsonDoc NVARCHAR(max)\n) as rate_code\nCROSS APPLY OPENJSON(jsonDoc)\nWITH(\n    rate_code_id SMALLINT,\n    rate_code varchar(20)\n);\n\n-- process multiline json file\n\nSELECT rate_code_id, rate_code\nFROM OPENROWSET(\n    BULK 'rate_code_multi_line.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b',\n    ROWTERMINATOR = '0x0b'\n) \nWITH \n(\n    jsonDoc NVARCHAR(max)\n) as rate_code\nCROSS APPLY OPENJSON(jsonDoc)\nWITH(\n    rate_code_id SMALLINT,\n    rate_code varchar(20)\n);",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_db",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
