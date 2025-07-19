@@ -2,12 +2,12 @@
 	"name": "03 explore_vendor_csv",
 	"properties": {
 		"content": {
-			"query": "",
+			"query": "USE nyc_taxi_db;\n\nSELECT * FROM \nOPENROWSET (\n    BULK 'vendor_unquoted.csv',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '2.0',\n    HEADER_ROW = TRUE\n) AS [RESULT]\n;\n\nSELECT * FROM \nOPENROWSET (\n    BULK 'vendor.csv',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '2.0',\n    HEADER_ROW = TRUE\n) AS [RESULT]",
 			"metadata": {
 				"language": "sql"
 			},
 			"currentConnection": {
-				"databaseName": "master",
+				"databaseName": "nyc_taxi_db",
 				"poolName": "Built-in"
 			},
 			"resultLimit": 5000
