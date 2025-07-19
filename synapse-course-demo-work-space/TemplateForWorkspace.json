@@ -114,7 +114,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/02 explore calendar_csv')]",
+			"name": "[concat(parameters('workspaceName'), '/02 explore_calendar_csv')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -135,6 +135,26 @@
 		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/03 explore_vendor_csv')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "USE nyc_taxi_db;\n\nSELECT * FROM \nOPENROWSET (\n    BULK 'vendor_unquoted.csv',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '2.0',\n    HEADER_ROW = TRUE\n) AS [RESULT]\n;\n\nSELECT * FROM \nOPENROWSET (\n    BULK 'vendor.csv',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '2.0',\n    HEADER_ROW = TRUE\n) AS [RESULT]",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyc_taxi_db",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/04 explore_trip_type_tsv')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
