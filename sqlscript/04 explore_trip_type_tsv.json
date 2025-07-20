@@ -1,6 +1,9 @@
 {
 	"name": "04 explore_trip_type_tsv",
 	"properties": {
+		"folder": {
+			"name": "discovery"
+		},
 		"content": {
 			"query": "USE nyc_taxi_db;\n\nSELECT * FROM \nOPENROWSET (\n    BULK 'trip_type.tsv',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '2.0',\n    FIELDTERMINATOR = '\\t',\n    HEADER_ROW = TRUE\n) AS [RESULT]",
 			"metadata": {

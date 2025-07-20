@@ -1,6 +1,9 @@
 {
 	"name": "08 explore_trip_data_green_parquet",
 	"properties": {
+		"folder": {
+			"name": "discovery"
+		},
 		"content": {
 			"query": "USE nyc_taxi_db;\n\nSELECT result.filename() as file_name,\n        result.filepath() as file_path,\n        result.filepath(1) as year,\n        result.filepath(2) as month,\n        count(1) as no_of_records\nFROM \nOPENROWSET (\n    BULK 'trip_data_green_parquet/year=*/month=*/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'parquet'\n    ) as [result]\nWHERE [result].filepath(1) = 2020\n    and [result].filepath(2) in (2, 4, 6)\ngroup by result.filename(), \n        result.filepath(),\n        result.filepath(1), \n        result.filepath(2)\norder by no_of_records desc;",
 			"metadata": {

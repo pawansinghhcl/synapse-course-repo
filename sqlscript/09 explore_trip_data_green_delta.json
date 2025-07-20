@@ -1,0 +1,20 @@
+{
+	"name": "09 explore_trip_data_green_delta",
+	"properties": {
+		"folder": {
+			"name": "discovery"
+		},
+		"content": {
+			"query": "use nyc_taxi_db;\n\nSELECT * FROM \nOPENROWSET(\n    BULK 'trip_data_gren_delta/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'delta'    \n) as [result]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_db",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
