@@ -1,0 +1,20 @@
+{
+	"name": "11 data_quality_checks",
+	"properties": {
+		"folder": {
+			"name": "discovery"
+		},
+		"content": {
+			"query": "USE nyc_taxi_db;\n\nSELECT min(fare_amount) as min_fare_amount,\n        max(fare_amount) as max_fare_amount,\n        avg(fare_amount) as avg_fare_amount\nFROM \nOPENROWSET(\n    BULK 'trip_data_green_parquet/year=*/month=*/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'parquet'\n) as trip_data;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_db",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
