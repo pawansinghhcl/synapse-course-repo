@@ -5,7 +5,7 @@
 			"name": "discovery"
 		},
 		"content": {
-			"query": "USE nyc_taxi_db;\n\nSELECT *\nFROM ",
+			"query": "USE nyc_taxi_db;\n\nSELECT taxi_zone.borough,\n        count(taxi_zone.borough) as no_of_trips\nFROM \nOPENROWSET (\n    BULK 'trip_data_green_parquet/year=2020/month=01/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'PARQUET'\n) AS trip_data\n\nJOIN \nOPENROWSET (\n    BULK 'taxi_zone.csv',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION = '2.0',\n    FIRSTROW = 2\n) \nWITH (\n    location_id SMALLINT 1,\n    borough VARCHAR(15) 2,\n    zone VARCHAR(50) 3,\n    service_zone VARCHAR(15) 4\n)AS taxi_zone\nON trip_data.PULocationID = taxi_zone.location_id\nGROUP BY taxi_zone.borough\nORDER BY count(taxi_zone.borough) DESC;",
 			"metadata": {
 				"language": "sql"
 			},
