@@ -194,7 +194,7 @@
 					"name": "discovery"
 				},
 				"content": {
-					"query": "USE nyc_taxi_db;\n\nSELECT CAST(JSON_VALUE(jsondoc, '$.payment_type') AS SMALLINT) as payment_type,\n        CAST(JSON_VALUE(jsondoc, '$.payment_type_desc') AS VARCHAR(15)) as payment_type_desc\n FROM \nOPENROWSET (\n    BULK 'payment_type.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '1.0',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b',\n    ROWTERMINATOR = '0x0a',\n    HEADER_ROW = TRUE\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS [RESULT]\n\n-- using OPENJSON in Synapse\n\nSELECT payment_type,\n        description\n FROM \nOPENROWSET (\n    BULK 'payment_type.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS [RESULT]\nCROSS APPLY OPENJSON(jsondoc)\nWITH (\n    payment_type SMALLINT,\n    description VARCHAR(15) '$.payment_type_desc'\n)\n\n-- rading array json file\n\nSELECT CAST(JSON_VALUE(jsondoc, '$.payment_type') AS SMALLINT) as payment_type,\n        CAST(JSON_VALUE(jsondoc, '$.payment_type_desc[0].value') AS VARCHAR(15)) as payment_type_desc_01,\n        CAST(JSON_VALUE(jsondoc, '$.payment_type_desc[1].value') AS VARCHAR(15)) as payment_type_desc_02\n FROM \nOPENROWSET (\n    BULK 'payment_type_array.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '1.0',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b',\n    ROWTERMINATOR = '0x0a',\n    HEADER_ROW = TRUE\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS [RESULT]\n\n-- use openjson to explode json array\n\nSELECT payment_type, payment_type_desc_value\nFROM \nOPENROWSET(\n    BULK 'payment_type_array.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '1.0',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b',\n    ROWTERMINATOR = '0x0a',\n    HEADER_ROW = TRUE\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS payment_type\nCROSS APPLY openjson(jsondoc)\nWITH (\n    payment_type SMALLINT,\n    payment_type_desc NVARCHAR(max) as Json\n)\nCROSS APPLY OPENJSON(payment_type_desc)\nWITH (\n    sub_type SMALLINT,\n    payment_type_desc_value VARCHAR(20) '$.value'\n    )\n",
+					"query": "USE nyc_taxi_db;\n\nSELECT CAST(JSON_VALUE(jsondoc, '$.payment_type') AS SMALLINT) as payment_type,\n        CAST(JSON_VALUE(jsondoc, '$.payment_type_desc') AS VARCHAR(15)) as payment_type_desc\n FROM \nOPENROWSET (\n    BULK 'payment_type.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '1.0',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b',\n    ROWTERMINATOR = '0x0a',\n    HEADER_ROW = TRUE\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS [RESULT]\n\n-- using OPENJSON in Synapse\n\nSELECT payment_type,\n        description\n FROM \nOPENROWSET (\n    BULK 'payment_type.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS [RESULT]\nCROSS APPLY OPENJSON(jsondoc)\nWITH (\n    payment_type SMALLINT,\n    description VARCHAR(15) '$.payment_type_desc'\n)\n\n-- reading array json file\n\nSELECT CAST(JSON_VALUE(jsondoc, '$.payment_type') AS SMALLINT) as payment_type,\n        CAST(JSON_VALUE(jsondoc, '$.payment_type_desc[0].value') AS VARCHAR(15)) as payment_type_desc_01,\n        CAST(JSON_VALUE(jsondoc, '$.payment_type_desc[1].value') AS VARCHAR(15)) as payment_type_desc_02\n FROM \nOPENROWSET (\n    BULK 'payment_type_array.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '1.0',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b',\n    ROWTERMINATOR = '0x0a',\n    HEADER_ROW = TRUE\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS [RESULT]\n\n-- use openjson to explode json array\n\nSELECT payment_type, payment_type_desc_value\nFROM \nOPENROWSET(\n    BULK 'payment_type_array.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION  = '1.0',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b',\n    ROWTERMINATOR = '0x0a',\n    HEADER_ROW = TRUE\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS payment_type\nCROSS APPLY openjson(jsondoc)\nWITH (\n    payment_type SMALLINT,\n    payment_type_desc NVARCHAR(max) as Json\n)\nCROSS APPLY OPENJSON(payment_type_desc)\nWITH (\n    sub_type SMALLINT,\n    payment_type_desc_value VARCHAR(20) '$.value'\n    )\n;\n\nSELECT * FROM \nOPENROWSET (\n    BULK 'payment_type.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS [RESULT]\nCROSS APPLY OPENJSON(jsondoc)\nWITH (\n    payment_type SMALLINT,\n    description VARCHAR(15) '$.payment_type_desc'\n)\n",
 					"metadata": {
 						"language": "sql"
 					},
@@ -332,7 +332,7 @@
 					"name": "discovery"
 				},
 				"content": {
-					"query": "USE nyc_taxi_db;\n\nSELECT min(fare_amount) as min_fare_amount,\n        max(fare_amount) as max_fare_amount,\n        avg(fare_amount) as avg_fare_amount\nFROM \nOPENROWSET(\n    BULK 'trip_data_green_parquet/year=*/month=*/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'parquet'\n) as trip_data;",
+					"query": "USE nyc_taxi_db;\n\nSELECT TOP 100 *\nFROM \nOPENROWSET(\n    BULK 'trip_data_green_parquet/year=*/month=*/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'parquet'\n) as trip_data;\n\nSELECT min(fare_amount) as min_fare_amount,\n        max(fare_amount) as max_fare_amount,\n        avg(fare_amount) as avg_fare_amount\nFROM \nOPENROWSET(\n    BULK 'trip_data_green_parquet/year=*/month=*/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'parquet'\n) as trip_data;",
 					"metadata": {
 						"language": "sql"
 					},
@@ -356,6 +356,52 @@
 				},
 				"content": {
 					"query": "USE nyc_taxi_db;\n\nSELECT taxi_zone.borough,\n        count(taxi_zone.borough) as no_of_trips\nFROM \nOPENROWSET (\n    BULK 'trip_data_green_parquet/year=2020/month=01/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'PARQUET'\n) AS trip_data\n\nJOIN \nOPENROWSET (\n    BULK 'taxi_zone.csv',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    PARSER_VERSION = '2.0',\n    FIRSTROW = 2\n) \nWITH (\n    location_id SMALLINT 1,\n    borough VARCHAR(15) 2,\n    zone VARCHAR(50) 3,\n    service_zone VARCHAR(15) 4\n)AS taxi_zone\nON trip_data.PULocationID = taxi_zone.location_id\nGROUP BY taxi_zone.borough\nORDER BY count(taxi_zone.borough) DESC;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyc_taxi_db",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/13 simple_transformations')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "discovery"
+				},
+				"content": {
+					"query": "USE nyc_taxi_db;\n\nSELECT TOP 100 \n    lpep_pickup_datetime,\n    lpep_dropoff_datetime,\n    DATEDIFF(MINUTE, lpep_pickup_datetime, lpep_dropoff_datetime) / 60 AS from_hour,\n    (DATEDIFF(MINUTE, lpep_pickup_datetime, lpep_dropoff_datetime) / 60) + 1 AS to_hour\nFROM\nOPENROWSET (\n    BULK 'trip_data_green_parquet/year=2020/month=01/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'PARQUET'\n) as trip_data;",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyc_taxi_db",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/14 discovery_assignment')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "discovery"
+				},
+				"content": {
+					"query": "USE nyc_taxi_db;\n\nSELECT taxi_zone.borough,\n        count(taxi_zone.borough) as total_trips,\n        sum(case when payment_type.description = 'cash' then 1 else 0 end) as 'cash_trips',\n        sum(case when payment_type.description = 'Credit card' then 1 else 0 end )  as 'card_trips',\n        (sum(case when payment_type.description = 'cash' then 1 else 0 end) / count(taxi_zone.borough)) * 100 as 'cash_trips_percentage',\n        (sum(case when payment_type.description = 'Credit card' then 1 else 0 end) / count(taxi_zone.borough)) * 100 as 'card_trips_percentage'\nFROM \n    OPENROWSET(\n        BULK 'trip_data_green_parquet/year=*/month=*/',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'PARQUET'\n    ) AS trip_data\nJOIN\n    OPENROWSET(\n        BULK 'taxi_zone.csv',\n        DATA_SOURCE = 'nyc_taxi_data_raw',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0',\n        HEADER_ROW = TRUE\n    ) AS taxi_zone ON trip_data.PULocationID = taxi_zone.LocationID\nJOIN\n    OPENROWSET (\n    BULK 'payment_type.json',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'CSV',\n    FIELDTERMINATOR = '0x0b',\n    FIELDQUOTE = '0x0b'\n)\nWITH (\n    jsondoc NVARCHAR(max)\n) AS [RESULT]\nCROSS APPLY OPENJSON(jsondoc)\nWITH (\n    payment_type SMALLINT,\n    description VARCHAR(15) '$.payment_type_desc'\n) AS payment_type\nON trip_data.payment_type = payment_type.payment_type\nGROUP BY taxi_zone.borough;",
 					"metadata": {
 						"language": "sql"
 					},
