@@ -1,0 +1,20 @@
+{
+	"name": "13 simple_transformations",
+	"properties": {
+		"folder": {
+			"name": "discovery"
+		},
+		"content": {
+			"query": "USE nyc_taxi_db;\n\nSELECT TOP 100 \n    lpep_pickup_datetime,\n    lpep_dropoff_datetime,\n    DATEDIFF(MINUTE, lpep_pickup_datetime, lpep_dropoff_datetime) / 60 AS from_hour,\n    (DATEDIFF(MINUTE, lpep_pickup_datetime, lpep_dropoff_datetime) / 60) + 1 AS to_hour\nFROM\nOPENROWSET (\n    BULK 'trip_data_green_parquet/year=2020/month=01/',\n    DATA_SOURCE = 'nyc_taxi_data_raw',\n    FORMAT = 'PARQUET'\n) as trip_data;",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyc_taxi_db",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
